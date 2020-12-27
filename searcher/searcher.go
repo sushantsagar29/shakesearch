@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"index/suffixarray"
 	"net/http"
+	"strings"
 )
 
 type Searcher struct {
@@ -52,7 +53,9 @@ func (s *Searcher) search(query string) (r Response) {
 		Count: len(idxs),
 	}
 	for _, idx := range idxs {
-		r.Matches = append(r.Matches, s.CompleteWorks[idx-250:idx+250])
+		text := s.CompleteWorks[idx-250 : idx+250]
+		highlightedText := strings.ReplaceAll(text, query, "<highlight>"+query+"</highlight>")
+		r.Matches = append(r.Matches, highlightedText)
 	}
 	return
 }

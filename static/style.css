@@ -21,6 +21,15 @@ tr:nth-child(even) {
   background-color: #dddddd;
 }
 
+#table-body highlight{
+  background-color: yellow;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  padding: 8px;
+}
+
 /*
    * Remove text-shadow in selection highlight:
    * https://twitter.com/miketaylr/status/12228805301

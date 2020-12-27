@@ -14,13 +14,16 @@ const Controller = {
         const tableHead = document.getElementById("table-head");
         const tableBody = document.getElementById("table-body");
 
-        tableHead.innerHTML = `<th>Number of matches : ${response.count}</th>`;
+        tableHead.innerHTML = `<th colspan="2">Number of matches : ${response.count}</th>`;
 
-        const rows = [];
-        for (let match of response.matches) {
-            rows.push(`<td>${match}<tr/>`);
+        let content = "";
+        for (let i = 0; i < response.matches.length; i++) {
+            content += (`<tr>`);
+            content += (`<td>${i + 1}</td>`);
+            content += (`<td>${response.matches[i]}</td>`);
+            content += (`</tr>`);
         }
-        tableBody.innerHTML = rows;
+        tableBody.innerHTML = content;
     },
 };
 
