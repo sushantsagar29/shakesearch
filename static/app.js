@@ -5,7 +5,7 @@ const Controller = {
         const data = Object.fromEntries(new FormData(form));
         const loader = document.getElementById("loader-wrapper");
         loader.style.display = "flex";
-        const response = fetch(`/search?q=${data.query}&sensitive=${data.case!==undefined}`).then((response) => {
+        const response = fetch(`/search?q=${data.query}&sensitive=${data.case!==undefined}&exact=${data.word!==undefined}`).then((response) => {
             response.json().then((results) => {
                 Controller.updateTable(results);
             });

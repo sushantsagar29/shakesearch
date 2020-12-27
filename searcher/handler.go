@@ -39,6 +39,14 @@ func (s searchHandler) HandleSearch() func(w http.ResponseWriter, r *http.Reques
 			request.IsCaseSensitive = isCaseSensitive
 		}
 
+		exact := query.Get("exact")
+		isExactMatch, err := strconv.ParseBool(exact)
+		if err != nil {
+			request.IsExactMatch = false
+		} else {
+			request.IsExactMatch = isExactMatch
+		}
+
 		result := s.searchService.Search(request)
 		buf := &bytes.Buffer{}
 		enc := json.NewEncoder(buf)
