@@ -29,6 +29,7 @@ func NewSearchService(data []byte) Service {
 func (s *searchService) Search(request model.Request) (r model.Response) {
 	var idxs []int
 	var toReplace *regexp.Regexp
+
 	if request.IsCaseSensitive {
 		toReplace = regexp.MustCompile(request.Query)
 		idxs = s.SuffixArray.Lookup([]byte(request.Query), -1)
@@ -36,12 +37,24 @@ func (s *searchService) Search(request model.Request) (r model.Response) {
 		toReplace = regexp.MustCompile("(?i)" + request.Query)
 		idxs = s.SuffixArrayLowerCase.Lookup([]byte(strings.ToLower(request.Query)), -1)
 	}
+
 	r = model.Response{
 		Count:   len(idxs),
 		Matches: []string{},
 	}
+
 	for _, idx := range idxs {
-		text := s.CompleteWorks[idx-250 : idx+250]
+		startIndex := 0
+		if idx-250 >= startIndex {
+			startIndex = idx - 250
+		}
+
+		endIndex := len(s.CompleteWorks)
+		if idx+250 <= endIndex {
+			endIndex = idx + 250
+		}
+
+		text := s.CompleteWorks[startIndex:endIndex]
 		highlightedText := toReplace.ReplaceAllStringFunc(text, func(s string) string {
 			return "<highlight>" + s + "</highlight>"
 		})
