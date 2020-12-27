@@ -1,23 +1,27 @@
 const Controller = {
-  search: (ev) => {
-    ev.preventDefault();
-    const form = document.getElementById("form");
-    const data = Object.fromEntries(new FormData(form));
-    const response = fetch(`/search?q=${data.query}`).then((response) => {
-      response.json().then((results) => {
-        Controller.updateTable(results);
-      });
-    });
-  },
+    search: (ev) => {
+        ev.preventDefault();
+        const form = document.getElementById("form");
+        const data = Object.fromEntries(new FormData(form));
+        const response = fetch(`/search?q=${data.query}`).then((response) => {
+            response.json().then((results) => {
+                Controller.updateTable(results);
+            });
+        });
+    },
 
-  updateTable: (results) => {
-    const table = document.getElementById("table-body");
-    const rows = [];
-    for (let result of results) {
-      rows.push(`<tr>${result}<tr/>`);
-    }
-    table.innerHTML = rows;
-  },
+    updateTable: (response) => {
+        const tableHead = document.getElementById("table-head");
+        const tableBody = document.getElementById("table-body");
+
+        tableHead.innerHTML = `<th>Number of matches : ${response.count}</th>`;
+
+        const rows = [];
+        for (let match of response.matches) {
+            rows.push(`<td>${match}<tr/>`);
+        }
+        tableBody.innerHTML = rows;
+    },
 };
 
 const form = document.getElementById("form");

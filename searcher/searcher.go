@@ -12,6 +12,11 @@ type Searcher struct {
 	SuffixArray   *suffixarray.Index
 }
 
+type Response struct {
+	Count   int      `json:"count"`
+	Matches []string `json:"matches"`
+}
+
 func NewSearcher(data []byte) *Searcher {
 	return &Searcher{
 		CompleteWorks: string(data),
@@ -27,10 +32,10 @@ func (s *Searcher) HandleSearch() func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("missing search query in URL params"))
 			return
 		}
-		results := s.search(query[0])
+		result := s.search(query[0])
 		buf := &bytes.Buffer{}
 		enc := json.NewEncoder(buf)
-		err := enc.Encode(results)
+		err := enc.Encode(result)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("encoding failure"))
@@ -41,11 +46,13 @@ func (s *Searcher) HandleSearch() func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Searcher) search(query string) []string {
+func (s *Searcher) search(query string) (r Response) {
 	idxs := s.SuffixArray.Lookup([]byte(query), -1)
-	var results []string
-	for _, idx := range idxs {
-		results = append(results, s.CompleteWorks[idx-250:idx+250])
+	r = Response{
+		Count: len(idxs),
 	}
-	return results
+	for _, idx := range idxs {
+		r.Matches = append(r.Matches, s.CompleteWorks[idx-250:idx+250])
+	}
+	return
 }
