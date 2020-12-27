@@ -1,22 +1,27 @@
+const form = document.getElementById("form");
+const tableHead = document.getElementById("table-head");
+const tableBody = document.getElementById("table-body");
+const loader = document.getElementById("loader-wrapper");
+
 const Controller = {
     search: (ev) => {
         ev.preventDefault();
-        const form = document.getElementById("form");
         const data = Object.fromEntries(new FormData(form));
-        const loader = document.getElementById("loader-wrapper");
         loader.style.display = "flex";
-        const response = fetch(`/search?q=${data.query}&sensitive=${data.case!==undefined}&exact=${data.word!==undefined}`).then((response) => {
-            response.json().then((results) => {
-                Controller.updateTable(results);
+        const response = fetch(`/search?q=${data.query}&sensitive=${data.case !== undefined}&exact=${data.word !== undefined}`)
+            .then((response) => {
+                if (response.status != 200) {
+                    Controller.handleError()
+                }
+                response.json().then((results) => {
+                    Controller.updateTable(results);
+                });
+            }).catch(() => {
+                Controller.handleError()
             });
-        });
     },
 
     updateTable: (response) => {
-        const tableHead = document.getElementById("table-head");
-        const tableBody = document.getElementById("table-body");
-        const loader = document.getElementById("loader-wrapper");
-
         tableHead.innerHTML = `<th colspan="2">Number of matches : ${response.count}</th>`;
 
         let content = "";
@@ -30,7 +35,11 @@ const Controller = {
         loader.style.display = "none";
         tableBody.innerHTML = content;
     },
+
+    handleError: () => {
+        tableHead.innerHTML = `<th colspan="2">Oops! Something went wrong.</th>`;
+        loader.style.display = "none";
+    },
 };
 
-const form = document.getElementById("form");
 form.addEventListener("submit", Controller.search);
