@@ -3,6 +3,8 @@ const Controller = {
         ev.preventDefault();
         const form = document.getElementById("form");
         const data = Object.fromEntries(new FormData(form));
+        const loader = document.getElementById("loader-wrapper");
+        loader.style.display = "flex";
         const response = fetch(`/search?q=${data.query}&sensitive=${data.case!==undefined}`).then((response) => {
             response.json().then((results) => {
                 Controller.updateTable(results);
@@ -13,6 +15,7 @@ const Controller = {
     updateTable: (response) => {
         const tableHead = document.getElementById("table-head");
         const tableBody = document.getElementById("table-body");
+        const loader = document.getElementById("loader-wrapper");
 
         tableHead.innerHTML = `<th colspan="2">Number of matches : ${response.count}</th>`;
 
@@ -23,6 +26,8 @@ const Controller = {
             content += (`<td>${response.matches[i]}</td>`);
             content += (`</tr>`);
         }
+
+        loader.style.display = "none";
         tableBody.innerHTML = content;
     },
 };
