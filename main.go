@@ -14,7 +14,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	searchHandler := searcher.NewSearcher(content)
+
+	searchService := searcher.NewSearchService(content)
+	searchHandler := searcher.NewSearchHandler(searchService)
 
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
